@@ -19,6 +19,7 @@ Simple chat with "Peer To Peer" connection by LAN. Made with SFML.
 -If everything goes right, you should get a message asking for your nickname.
 
 
+
 After those steps you should be able to use the chat properly!
 
 # How to install
