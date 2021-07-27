@@ -7,6 +7,7 @@ Simple chat with "Peer To Peer" connection by LAN. Made with SFML.
 -Important: There MUST be one server and one CLIENT
 
 2.a) Join the server by typing in it's IP.
+
 2.b) Wait for the client to join the server.
 
 3. Type in your nickname.
