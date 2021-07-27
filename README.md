@@ -14,5 +14,5 @@ Simple chat with "Peer To Peer" connection by LAN. Made with SFML.
 
 After those steps you should be able to use the chat properly!
 
-#How to install
+# How to install
 Just download the .ZIP of the repository and run the .exe file in the "bin" folder.
