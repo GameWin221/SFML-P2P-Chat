@@ -2,6 +2,8 @@
 
 #include <SFML/Network.hpp>
 #include <iostream>
+#include <string>
+#include <thread>
 
 enum Connection_Type {
 	CLIENT,
@@ -14,11 +16,20 @@ private:
 	sf::TcpSocket socket;
 	sf::TcpListener listener;
 
+	std::thread request_thread;
+
+	sf::TcpSocket request_socket;
+	sf::TcpListener request_listener;
+
+	bool is_responding = false;
+
 	//Connection type is either "server" or "client"
 	Connection_Type connectionType;
 
+	void request_check_loop();
+
 public:
-	float secondsToTimeout = 5.0f;
+	float secondsToTimeout = 2.0f;
 
 	sf::Socket::Status socketStatus();
 
@@ -28,7 +39,10 @@ public:
 	bool isConnected();
 
 	void connect(sf::IpAddress target_ip, unsigned int network_port);
-	void disconnect();
+	void disconnect(bool send_disconnect_request);
+
+	void request(std::string request_name);
+	void respond();
 
 	void startListening(unsigned int network_port);
 	void stopListening();

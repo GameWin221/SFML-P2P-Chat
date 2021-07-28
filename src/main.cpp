@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono> 
+#include <sstream>
 
 #include "Networker.h"
 
@@ -26,7 +27,7 @@ void AddText(std::string text)
 		for (int i = 0; i < lines_of_text.size(); i++)
 			lines_of_text[i].move(0, -40);
 	}
-
+	
 	std::time_t t = std::time(0);
 	std::tm* now = std::localtime(&t);
 	std::string time_str;
@@ -50,9 +51,6 @@ void UpdateChat()
 			incoming >> incoming_text;
 
 			AddText(incoming_text);
-
-			if (incoming_text == "(Networker): User disconnected!")
-				network->disconnect();
 		}
 
 		incoming.clear();
@@ -101,7 +99,7 @@ int main()
 		network->connect(server_ip, 2000);
 	}
 
-	std::cout << "Type in your nickname:\n";
+	std::cout << "\nType in your nickname:\n";
 	std::cin >> nickname;
 
 	sf::RenderWindow window(sf::VideoMode(1200, 500), "LAN Chat User '" +nickname+ "' (" + sf::IpAddress::getLocalAddress().toString() + ")", sf::Style::Close);
@@ -116,7 +114,7 @@ int main()
 		{
 			if (ev.type == sf::Event::Closed) 
 			{
-				network->disconnect();
+				network->disconnect(true);
 				window.close();
 				return 0;
 			}
@@ -124,7 +122,7 @@ int main()
 			
 			if (ev.type == sf::Event::TextEntered)
 			{
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))			//Sending message packet
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && message.length() > 1)			//Sending message packet
 				{
 					//Removing the '_'
 					message.erase(message.length() - 1);
@@ -133,18 +131,24 @@ int main()
 					network->sendPacket(message_packet);
 					message_packet.clear();
 
+
+
 					AddText("("+ nickname + "): " + message);
 					message = "_";
 					inputField.setString(message);
 				}
-				else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace))  //Adding characters to the message
+				else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))  //Adding characters to the message
 				{
-					//Removing the '_'
-					message.erase(message.length() - 1);
+					int uni_char = ev.text.unicode;
+					if (uni_char < 128)
+					{
+						//Removing the '_'
+						message.erase(message.length() - 1);
 
-					message += ev.text.unicode;
-					message += "_";
-					inputField.setString(message);
+						message += ev.text.unicode;
+						message += "_";
+						inputField.setString(message);
+					}
 				}
 				else															//Erasing last character from the message
 				{
@@ -171,7 +175,7 @@ int main()
 	packet_update.join();
 	network->~TCPNetworker();
 
-	system("pause");
+	system("exit");
 
 	return 0;
 }
